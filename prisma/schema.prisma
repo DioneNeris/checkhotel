@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum RoomStatus {
+  FREE
+  PENDING
+  APPROVED
+  NO_ACCESS
+}
+
+enum InspectionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ItemStatus {
+  OK
+  ISSUE
+}
+
+model User {
+  id               String    @id @default(uuid())
+  name             String
+  email            String    @unique
+  passwordHash     String
+  role             Role      @default(USER)
+  active           Boolean   @default(true)
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  inspections      Inspection[]
+  passwordResets   PasswordReset[]
+
+  @@map("users")
+}
+
+model Maid {
+  id          String       @id @default(uuid())
+  name        String
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  inspections Inspection[]
+
+  @@map("maids")
+}
+
+model Room {
+  id          String       @id @default(uuid())
+  number      String       @unique
+  status      RoomStatus   @default(FREE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  inspections Inspection[]
+
+  @@map("rooms")
+}
+
+model ChecklistItem {
+  id          String       @id @default(uuid())
+  description String
+  isActive    Boolean      @default(true)
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  inspectionItems InspectionItem[]
+
+  @@map("checklist_items")
+}
+
+model Inspection {
+  id          String           @id @default(uuid())
+  roomId      String
+  userId      String
+  maidId      String?
+  status      InspectionStatus @default(PENDING)
+  date        DateTime         @default(now())
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  room        Room             @relation(fields: [roomId], references: [id])
+  user        User             @relation(fields: [userId], references: [id])
+  maid        Maid?            @relation(fields: [maidId], references: [id])
+  items       InspectionItem[]
+  reports     Report[]
+
+  @@map("inspections")
+}
+
+model InspectionItem {
+  id              String         @id @default(uuid())
+  inspectionId    String
+  checklistItemId String
+  status          ItemStatus
+  observation     String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  inspection      Inspection     @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  checklistItem   ChecklistItem  @relation(fields: [checklistItemId], references: [id])
+  photos          Photo[]
+
+  @@map("inspection_items")
+}
+
+model Photo {
+  id               String         @id @default(uuid())
+  inspectionItemId String
+  url              String
+  createdAt        DateTime       @default(now())
+
+  inspectionItem   InspectionItem @relation(fields: [inspectionItemId], references: [id], onDelete: Cascade)
+
+  @@map("photos")
+}
+
+model Report {
+  id           String     @id @default(uuid())
+  inspectionId String
+  pdfUrl       String
+  generatedAt  DateTime   @default(now())
+
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@map("reports")
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [email], references: [email])
+
+  @@map("password_resets")
+}
