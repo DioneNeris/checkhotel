@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { ChecklistItem, Room } from "@prisma/client";
 import { Camera, Check, X, Send, Save, ArrowLeft, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 type ItemState = {
   checklistItemId: string;
