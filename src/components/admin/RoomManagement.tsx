@@ -146,7 +146,7 @@ export function RoomManagement({ initialRooms }: { initialRooms: Room[] }) {
                 placeholder="Ex: 101"
               />
               {!editingRoom && (
-                <p className="mt-2 text-xs text-slate-400 italic">O quarto será criado com o status "Livre" por padrão.</p>
+                <p className="mt-2 text-xs text-slate-400 italic">O quarto será criado com o status &quot;Livre&quot; por padrão.</p>
               )}
             </div>
           </div>

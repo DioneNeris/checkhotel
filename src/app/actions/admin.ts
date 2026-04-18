@@ -2,15 +2,19 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { Role, RoomStatus } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 // --- USUÁRIOS ---
 export async function createUser(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
-  const role = formData.get("role") as "ADMIN" | "RECEPTIONIST";
+  const role = formData.get("role") as Role;
+
+  const hashedPassword = await bcrypt.hash("checkhotel123", 10);
 
   await prisma.user.create({
-    data: { name, email, role },
+    data: { name, email, role, passwordHash: hashedPassword },
   });
 
   revalidatePath("/admin/usuarios");
@@ -19,7 +23,7 @@ export async function createUser(formData: FormData) {
 export async function updateUser(id: string, formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
-  const role = formData.get("role") as "ADMIN" | "RECEPTIONIST";
+  const role = formData.get("role") as Role;
 
   await prisma.user.update({
     where: { id },
@@ -68,7 +72,7 @@ export async function createRoom(formData: FormData) {
   const number = formData.get("number") as string;
 
   await prisma.room.create({
-    data: { number, status: "FREE" },
+    data: { number, status: RoomStatus.FREE },
   });
 
   revalidatePath("/admin/quartos");

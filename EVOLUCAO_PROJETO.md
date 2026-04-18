@@ -17,6 +17,10 @@ Este arquivo documenta a progressão do projeto, decisões técnicas e novas fun
     - Implementada função de **Exclusão** com confirmação.
 - **Otimização de Mídia:**
     - Compressão automática de imagens no cliente antes do armazenamento/upload.
+- **Correções de Build (CI/CD):**
+    - Correção de erro de lint (`react/no-unescaped-entities`) no componente de quartos.
+    - Correção de tipagem do TypeScript nas Server Actions (uso de Enums do Prisma).
+    - Implementação de senha padrão (`checkhotel123`) para novos usuários, satisfazendo requisitos do esquema do banco de dados.
 
 ### 🛠️ Ajustes Técnicos
 - **Idempotência na API:** O endpoint `/api/inspections` agora evita duplicidade de vistorias para o mesmo quarto no mesmo dia.
