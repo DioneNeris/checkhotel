@@ -10,7 +10,8 @@ Este arquivo documenta a progressão do projeto, decisões técnicas e novas fun
 - **Gestão de Usuários Avançada:**
     - Sistema de **Inativação de Contas** (Soft Delete) para preservação de histórico.
     - Geração automática de **Senhas Temporárias** aleatórias no cadastro e reset.
-    - Implementação de flag `requiresNewPassword` para fluxo de primeiro acesso.
+    - Implementação de flag `requiresNewPassword` e **Fluxo de Primeiro Acesso** bloqueante.
+    - Criação da página `/auth/new-password` para definição de credenciais definitivas.
     - Interface atualizada com feedback visual para usuários ativos/inativos.
 - **Sincronização Offline Híbrida:** 
     - Implementação de persistência local via **IndexedDB (Dexie.js)**.

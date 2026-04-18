@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LogOut, WifiOff, Wifi, User, Home, CheckCircle2, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import { clsx, type ClassValue } from "clsx";
@@ -19,8 +19,15 @@ export default function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.requiresNewPassword && pathname !== "/auth/new-password") {
+      router.push("/auth/new-password");
+    }
+  }, [session, status, pathname, router]);
 
 
   return (

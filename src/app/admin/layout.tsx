@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   Menu,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -26,9 +26,16 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.requiresNewPassword && pathname !== "/auth/new-password") {
+      router.push("/auth/new-password");
+    }
+  }, [session, status, pathname, router]);
 
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
