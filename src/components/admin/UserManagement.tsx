@@ -228,10 +228,8 @@ export function UserManagement({ initialUsers }: { initialUsers: User[] }) {
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent/10">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent/10" />}>
+                        <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48 rounded-xl border-border/50 shadow-xl">
                         <DropdownMenuLabel className="font-serif">Opções de Conta</DropdownMenuLabel>

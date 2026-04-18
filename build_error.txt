@@ -1,0 +1,216 @@
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+
+Rebuilding...
+CssSyntaxError: tailwindcss: C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\src\app\globals.css:1:1: The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive.
+    at Input.error (C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\node_modules\postcss\lib\input.js:135:16)
+    at AtRule.error (C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\node_modules\postcss\lib\node.js:146:32)
+    at processApply (C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\node_modules\tailwindcss\lib\lib\expandApplyAtRules.js:380:29)
+    at C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\node_modules\tailwindcss\lib\lib\expandApplyAtRules.js:551:9
+    at C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\node_modules\tailwindcss\lib\processTailwindFeatures.js:55:50
+    at async Object.Once (C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\node_modules\tailwindcss\lib\cli\build\plugin.js:248:17)
+    at async LazyResult.runAsync (C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\node_modules\postcss\lib\lazy-result.js:293:11)
+    at async build (C:\Users\dione\OneDrive\PROJETOS_DEV\checkhotel\node_modules\tailwindcss\lib\cli\build\index.js:49:9) {
+  reason: 'The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive.',
+  file: 'C:\\Users\\dione\\OneDrive\\PROJETOS_DEV\\checkhotel\\src\\app\\globals.css',
+  source: '@tailwind base;\n' +
+    '@tailwind components;\n' +
+    '@tailwind utilities;\n' +
+    '\n' +
+    '@layer utilities {\n' +
+    '  .text-balance {\n' +
+    '    text-wrap: balance;\n' +
+    '  }\n' +
+    '}\n' +
+    '\n' +
+    '@layer base {\n' +
+    '  .theme {\n' +
+    '    --font-heading: var(--font-serif);\n' +
+    '    --font-sans: var(--font-jakarta);\n' +
+    '  }\n' +
+    '  :root {\n' +
+    '    --background: oklch(0.99 0.005 45);\n' +
+    '    --foreground: oklch(0.2 0.01 45);\n' +
+    '    --card: oklch(1 0 0);\n' +
+    '    --card-foreground: oklch(0.2 0.01 45);\n' +
+    '    --popover: oklch(1 0 0);\n' +
+    '    --popover-foreground: oklch(0.2 0.01 45);\n' +
+    '    --primary: oklch(0.25 0.02 45);\n' +
+    '    --primary-foreground: oklch(0.985 0.01 45);\n' +
+    '    --secondary: oklch(0.95 0.01 45);\n' +
+    '    --secondary-foreground: oklch(0.25 0.02 45);\n' +
+    '    --muted: oklch(0.95 0.01 45);\n' +
+    '    --muted-foreground: oklch(0.5 0.02 45);\n' +
+    '    --accent: oklch(0.75 0.08 75);\n' +
+    '    --accent-foreground: oklch(0.2 0.01 45);\n' +
+    '    --destructive: oklch(0.55 0.15 25);\n' +
+    '    --border: oklch(0.9 0.01 45);\n' +
+    '    --input: oklch(0.9 0.01 45);\n' +
+    '    --ring: oklch(0.75 0.08 75);\n' +
+    '    --chart-1: oklch(0.75 0.08 75);\n' +
+    '    --chart-2: oklch(0.25 0.02 45);\n' +
+    '    --chart-3: oklch(0.5 0.02 45);\n' +
+    '    --chart-4: oklch(0.9 0.01 45);\n' +
+    '    --chart-5: oklch(0.99 0.005 45);\n' +
+    '    --radius: 0.75rem;\n' +
+    '    --sidebar: oklch(0.2 0.01 45);\n' +
+    '    --sidebar-foreground: oklch(0.985 0.01 45);\n' +
+    '    --sidebar-primary: oklch(0.75 0.08 75);\n' +
+    '    --sidebar-primary-foreground: oklch(0.2 0.01 45);\n' +
+    '    --sidebar-accent: oklch(0.25 0.02 45);\n' +
+    '    --sidebar-accent-foreground: oklch(0.985 0.01 45);\n' +
+    '    --sidebar-border: oklch(0.25 0.02 45);\n' +
+    '    --sidebar-ring: oklch(0.75 0.08 75);\n' +
+    '  }\n' +
+    '  .dark {\n' +
+    '    --background: oklch(0.145 0 0);\n' +
+    '    --foreground: oklch(0.985 0 0);\n' +
+    '    --card: oklch(0.205 0 0);\n' +
+    '    --card-foreground: oklch(0.985 0 0);\n' +
+    '    --popover: oklch(0.205 0 0);\n' +
+    '    --popover-foreground: oklch(0.985 0 0);\n' +
+    '    --primary: oklch(0.922 0 0);\n' +
+    '    --primary-foreground: oklch(0.205 0 0);\n' +
+    '    --secondary: oklch(0.269 0 0);\n' +
+    '    --secondary-foreground: oklch(0.985 0 0);\n' +
+    '    --muted: oklch(0.269 0 0);\n' +
+    '    --muted-foreground: oklch(0.708 0 0);\n' +
+    '    --accent: oklch(0.269 0 0);\n' +
+    '    --accent-foreground: oklch(0.985 0 0);\n' +
+    '    --destructive: oklch(0.704 0.191 22.216);\n' +
+    '    --border: oklch(1 0 0 / 10%);\n' +
+    '    --input: oklch(1 0 0 / 15%);\n' +
+    '    --ring: oklch(0.556 0 0);\n' +
+    '    --chart-1: oklch(0.87 0 0);\n' +
+    '    --chart-2: oklch(0.556 0 0);\n' +
+    '    --chart-3: oklch(0.439 0 0);\n' +
+    '    --chart-4: oklch(0.371 0 0);\n' +
+    '    --chart-5: oklch(0.269 0 0);\n' +
+    '    --sidebar: oklch(0.205 0 0);\n' +
+    '    --sidebar-foreground: oklch(0.985 0 0);\n' +
+    '    --sidebar-primary: oklch(0.488 0.243 264.376);\n' +
+    '    --sidebar-primary-foreground: oklch(0.985 0 0);\n' +
+    '    --sidebar-accent: oklch(0.269 0 0);\n' +
+    '    --sidebar-accent-foreground: oklch(0.985 0 0);\n' +
+    '    --sidebar-border: oklch(1 0 0 / 10%);\n' +
+    '    --sidebar-ring: oklch(0.556 0 0);\n' +
+    '  }\n' +
+    '  * {\n' +
+    '    @apply border-border;\n' +
+    '  }\n' +
+    '  body {\n' +
+    '    @apply bg-background text-foreground;\n' +
+    '  }\n' +
+    '  html {\n' +
+    '    @apply font-sans;\n' +
+    '  }\n' +
+    '}',
+  line: 1,
+  column: 1,
+  endLine: 1,
+  endColumn: 16,
+  input: {
+    column: 1,
+    endColumn: 16,
+    endLine: 1,
+    endOffset: 15,
+    line: 1,
+    offset: 0,
+    source: '@tailwind base;\n' +
+      '@tailwind components;\n' +
+      '@tailwind utilities;\n' +
+      '\n' +
+      '@layer utilities {\n' +
+      '  .text-balance {\n' +
+      '    text-wrap: balance;\n' +
+      '  }\n' +
+      '}\n' +
+      '\n' +
+      '@layer base {\n' +
+      '  .theme {\n' +
+      '    --font-heading: var(--font-serif);\n' +
+      '    --font-sans: var(--font-jakarta);\n' +
+      '  }\n' +
+      '  :root {\n' +
+      '    --background: oklch(0.99 0.005 45);\n' +
+      '    --foreground: oklch(0.2 0.01 45);\n' +
+      '    --card: oklch(1 0 0);\n' +
+      '    --card-foreground: oklch(0.2 0.01 45);\n' +
+      '    --popover: oklch(1 0 0);\n' +
+      '    --popover-foreground: oklch(0.2 0.01 45);\n' +
+      '    --primary: oklch(0.25 0.02 45);\n' +
+      '    --primary-foreground: oklch(0.985 0.01 45);\n' +
+      '    --secondary: oklch(0.95 0.01 45);\n' +
+      '    --secondary-foreground: oklch(0.25 0.02 45);\n' +
+      '    --muted: oklch(0.95 0.01 45);\n' +
+      '    --muted-foreground: oklch(0.5 0.02 45);\n' +
+      '    --accent: oklch(0.75 0.08 75);\n' +
+      '    --accent-foreground: oklch(0.2 0.01 45);\n' +
+      '    --destructive: oklch(0.55 0.15 25);\n' +
+      '    --border: oklch(0.9 0.01 45);\n' +
+      '    --input: oklch(0.9 0.01 45);\n' +
+      '    --ring: oklch(0.75 0.08 75);\n' +
+      '    --chart-1: oklch(0.75 0.08 75);\n' +
+      '    --chart-2: oklch(0.25 0.02 45);\n' +
+      '    --chart-3: oklch(0.5 0.02 45);\n' +
+      '    --chart-4: oklch(0.9 0.01 45);\n' +
+      '    --chart-5: oklch(0.99 0.005 45);\n' +
+      '    --radius: 0.75rem;\n' +
+      '    --sidebar: oklch(0.2 0.01 45);\n' +
+      '    --sidebar-foreground: oklch(0.985 0.01 45);\n' +
+      '    --sidebar-primary: oklch(0.75 0.08 75);\n' +
+      '    --sidebar-primary-foreground: oklch(0.2 0.01 45);\n' +
+      '    --sidebar-accent: oklch(0.25 0.02 45);\n' +
+      '    --sidebar-accent-foreground: oklch(0.985 0.01 45);\n' +
+      '    --sidebar-border: oklch(0.25 0.02 45);\n' +
+      '    --sidebar-ring: oklch(0.75 0.08 75);\n' +
+      '  }\n' +
+      '  .dark {\n' +
+      '    --background: oklch(0.145 0 0);\n' +
+      '    --foreground: oklch(0.985 0 0);\n' +
+      '    --card: oklch(0.205 0 0);\n' +
+      '    --card-foreground: oklch(0.985 0 0);\n' +
+      '    --popover: oklch(0.205 0 0);\n' +
+      '    --popover-foreground: oklch(0.985 0 0);\n' +
+      '    --primary: oklch(0.922 0 0);\n' +
+      '    --primary-foreground: oklch(0.205 0 0);\n' +
+      '    --secondary: oklch(0.269 0 0);\n' +
+      '    --secondary-foreground: oklch(0.985 0 0);\n' +
+      '    --muted: oklch(0.269 0 0);\n' +
+      '    --muted-foreground: oklch(0.708 0 0);\n' +
+      '    --accent: oklch(0.269 0 0);\n' +
+      '    --accent-foreground: oklch(0.985 0 0);\n' +
+      '    --destructive: oklch(0.704 0.191 22.216);\n' +
+      '    --border: oklch(1 0 0 / 10%);\n' +
+      '    --input: oklch(1 0 0 / 15%);\n' +
+      '    --ring: oklch(0.556 0 0);\n' +
+      '    --chart-1: oklch(0.87 0 0);\n' +
+      '    --chart-2: oklch(0.556 0 0);\n' +
+      '    --chart-3: oklch(0.439 0 0);\n' +
+      '    --chart-4: oklch(0.371 0 0);\n' +
+      '    --chart-5: oklch(0.269 0 0);\n' +
+      '    --sidebar: oklch(0.205 0 0);\n' +
+      '    --sidebar-foreground: oklch(0.985 0 0);\n' +
+      '    --sidebar-primary: oklch(0.488 0.243 264.376);\n' +
+      '    --sidebar-primary-foreground: oklch(0.985 0 0);\n' +
+      '    --sidebar-accent: oklch(0.269 0 0);\n' +
+      '    --sidebar-accent-foreground: oklch(0.985 0 0);\n' +
+      '    --sidebar-border: oklch(1 0 0 / 10%);\n' +
+      '    --sidebar-ring: oklch(0.556 0 0);\n' +
+      '  }\n' +
+      '  * {\n' +
+      '    @apply border-border;\n' +
+      '  }\n' +
+      '  body {\n' +
+      '    @apply bg-background text-foreground;\n' +
+      '  }\n' +
+      '  html {\n' +
+      '    @apply font-sans;\n' +
+      '  }\n' +
+      '}',
+    url: 'file:///C:/Users/dione/OneDrive/PROJETOS_DEV/checkhotel/src/app/globals.css',
+    file: 'C:\\Users\\dione\\OneDrive\\PROJETOS_DEV\\checkhotel\\src\\app\\globals.css'
+  },
+  plugin: 'tailwindcss'
+}
