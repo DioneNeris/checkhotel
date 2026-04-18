@@ -7,6 +7,11 @@ Este arquivo documenta a progressão do projeto, decisões técnicas e novas fun
 ## [2026-04-18] - Sincronização Offline e CRUD Administrativo
 
 ### ✨ Novas Funcionalidades
+- **Gestão de Usuários Avançada:**
+    - Sistema de **Inativação de Contas** (Soft Delete) para preservação de histórico.
+    - Geração automática de **Senhas Temporárias** aleatórias no cadastro e reset.
+    - Implementação de flag `requiresNewPassword` para fluxo de primeiro acesso.
+    - Interface atualizada com feedback visual para usuários ativos/inativos.
 - **Sincronização Offline Híbrida:** 
     - Implementação de persistência local via **IndexedDB (Dexie.js)**.
     - Motor de sincronização que prioriza dados (JSON) antes de fotos (Blobs).

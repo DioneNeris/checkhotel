@@ -11,30 +11,61 @@ export async function createUser(formData: FormData) {
   const email = formData.get("email") as string;
   const role = formData.get("role") as Role;
 
-  const hashedPassword = await bcrypt.hash("checkhotel123", 10);
+  // Gerar senha temporária aleatória (8 caracteres)
+  const tempPassword = Math.random().toString(36).slice(-8);
+  const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
   await prisma.user.create({
-    data: { name, email, role, passwordHash: hashedPassword },
+    data: { 
+      name, 
+      email, 
+      role, 
+      passwordHash: hashedPassword,
+      requiresNewPassword: true,
+      active: true
+    },
   });
 
   revalidatePath("/admin/usuarios");
+  return { tempPassword }; // Retornar para exibir no modal
 }
 
 export async function updateUser(id: string, formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const role = formData.get("role") as Role;
+  const active = formData.get("active") === "true";
 
   await prisma.user.update({
     where: { id },
-    data: { name, email, role },
+    data: { name, email, role, active },
   });
 
   revalidatePath("/admin/usuarios");
 }
 
+export async function resetUserPassword(id: string) {
+  const tempPassword = Math.random().toString(36).slice(-8);
+  const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+  await prisma.user.update({
+    where: { id },
+    data: { 
+      passwordHash: hashedPassword,
+      requiresNewPassword: true 
+    },
+  });
+
+  revalidatePath("/admin/usuarios");
+  return { tempPassword };
+}
+
 export async function deleteUser(id: string) {
-  await prisma.user.delete({ where: { id } });
+  // Em vez de deletar, inativamos para manter o histórico
+  await prisma.user.update({
+    where: { id },
+    data: { active: false },
+  });
   revalidatePath("/admin/usuarios");
 }
 
