@@ -14,12 +14,9 @@ import {
   Menu,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 export default function AdminLayout({
   children,
@@ -39,18 +36,18 @@ export default function AdminLayout({
 
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Usuarios", href: "/admin/usuarios", icon: Users },
+    { name: "Usuários", href: "/admin/usuarios", icon: Users },
     { name: "Camareiras", href: "/admin/camareiras", icon: ShieldCheck },
     { name: "Quartos", href: "/admin/quartos", icon: Hotel },
     { name: "Checklist", href: "/admin/checklist", icon: CheckSquare },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-background flex font-sans">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/80 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md lg:hidden transition-opacity duration-300"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -58,24 +55,30 @@ export default function AdminLayout({
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 bg-slate-950 flex flex-col transition-transform duration-300 lg:static lg:translate-x-0 border-r border-slate-800",
+          "fixed inset-y-0 left-0 z-50 w-72 bg-sidebar flex flex-col transition-all duration-300 lg:static lg:translate-x-0 border-r border-sidebar-border",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex h-20 shrink-0 items-center gap-x-3 px-6 border-b border-white/5">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-400 shadow-md shadow-emerald-500/20">
-            <Building className="h-6 w-6 text-white" />
+        <div className="flex h-24 shrink-0 items-center gap-x-3 px-8 border-b border-white/5 relative group">
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-accent shadow-[0_0_20px_rgba(var(--accent),0.3)] transition-transform group-hover:scale-105 duration-500">
+            <Building className="h-6 w-6 text-accent-foreground" />
           </div>
-          <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-emerald-200">
-            Admin Panel
-          </span>
+          <div className="flex flex-col">
+            <span className="text-lg font-serif font-bold text-sidebar-foreground tracking-tight leading-none">
+              CheckHotel
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold mt-1">
+              Elite Management
+            </span>
+          </div>
+          {/* Accent Gold Line */}
+          <div className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
         </div>
 
-        <nav className="flex flex-1 flex-col px-4 pt-6 pb-4 overflow-y-auto">
-          <div className="flex-1 space-y-2">
+        <nav className="flex flex-1 flex-col px-4 pt-8 pb-4 overflow-y-auto">
+          <div className="flex-1 space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-              // Fix active state for Dashboard exactly
               const isExactActive = pathname === "/admin" && item.href === "/admin";
               const isReallyActive = item.href === "/admin" ? isExactActive : isActive;
 
@@ -84,68 +87,79 @@ export default function AdminLayout({
                   key={item.name}
                   href={item.href}
                   className={cn(
+                    "group flex items-center gap-x-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-300",
                     isReallyActive
-                      ? "bg-indigo-500/10 text-indigo-400 shadow-sm shadow-indigo-500/5"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800/50",
-                    "group flex items-center gap-x-3 rounded-xl p-3 text-sm font-medium leading-6 transition-all"
+                      ? "bg-sidebar-accent text-sidebar-primary shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-white/5"
+                      : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-white/5"
                   )}
                 >
                   <item.icon
                     className={cn(
-                      isReallyActive ? "text-indigo-400" : "text-slate-400 group-hover:text-white",
-                      "h-5 w-5 shrink-0 transition-colors"
+                      "h-5 w-5 shrink-0 transition-all duration-300",
+                      isReallyActive 
+                        ? "text-sidebar-primary scale-110" 
+                        : "text-sidebar-foreground/40 group-hover:text-sidebar-foreground"
                     )}
                     aria-hidden="true"
                   />
                   {item.name}
+                  {isReallyActive && (
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-sidebar-primary animate-pulse" />
+                  )}
                 </Link>
               );
             })}
           </div>
 
           <div className="mt-auto pt-6 border-t border-white/5">
-            <div className="flex items-center gap-x-4 px-3 py-3 mb-4 rounded-xl bg-white/5 border border-white/5">
-              <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white shadow-inner">
-                {session?.user?.name?.charAt(0) || "A"}
-              </div>
+            <div className="flex items-center gap-x-4 px-4 py-4 mb-6 rounded-xl bg-white/5 border border-white/5 group hover:bg-white/[0.08] transition-all duration-300">
+              <Avatar className="h-10 w-10 border border-accent/20">
+                <AvatarFallback className="bg-sidebar-accent text-sidebar-primary font-bold">
+                  {session?.user?.name?.charAt(0) || "A"}
+                </AvatarFallback>
+              </Avatar>
               <div className="flex flex-col truncate">
-                <span className="text-sm font-semibold text-white truncate">
+                <span className="text-sm font-semibold text-sidebar-foreground truncate">
                   {session?.user?.name}
                 </span>
-                <span className="text-xs text-slate-400 truncate">
+                <span className="text-[11px] text-sidebar-foreground/40 truncate">
                   {session?.user?.email}
                 </span>
               </div>
             </div>
-            <button
+            
+            <Button
+              variant="ghost"
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="group flex w-full items-center gap-x-3 rounded-xl p-3 text-sm font-medium leading-6 text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-all"
+              className="w-full justify-start gap-x-3 text-red-400/80 hover:text-red-400 hover:bg-red-400/10 transition-all duration-300"
             >
-              <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
+              <LogOut className="h-5 w-5" />
               Sair
-            </button>
+            </Button>
           </div>
         </nav>
       </div>
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar mobile */}
-        <div className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-x-4 border-b border-slate-200 bg-white/50 backdrop-blur-md px-4 sm:gap-x-6 sm:px-6 lg:hidden">
+        <div className="sticky top-0 z-30 flex h-20 shrink-0 items-center justify-between gap-x-4 border-b border-border bg-background/80 backdrop-blur-xl px-6 lg:hidden">
           <button
             type="button"
-            className="-m-2.5 p-2.5 text-slate-700"
+            className="p-2 text-foreground/70 hover:text-foreground transition-colors"
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Abrir sidebar</span>
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
-          <div className="font-semibold text-slate-800">Admin Panel</div>
-          <div className="w-6" /> {/* Placeholder for balance */}
+          <div className="font-serif font-bold text-lg tracking-tight">CheckHotel</div>
+          <div className="w-10" />
         </div>
 
-        <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-          {children}
+        <main className="flex-1 overflow-y-auto bg-background p-6 lg:p-12">
+          <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {children}
+          </div>
         </main>
       </div>
     </div>

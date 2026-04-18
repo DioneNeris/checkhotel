@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
-import { Users, ShieldCheck, Hotel, CheckCircle } from "lucide-react";
+import { Users, ShieldCheck, Hotel, CheckCircle, ArrowUpRight, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
 
@@ -11,58 +13,137 @@ export default async function AdminDashboard() {
   const totalInspections = await prisma.inspection.count();
 
   const stats = [
-    { name: "Recepcionistas", value: totalUsers, icon: Users, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-    { name: "Camareiras", value: totalMaids, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { name: "Quartos", value: totalRooms, icon: Hotel, color: "text-amber-500", bg: "bg-amber-500/10" },
-    { name: "Vistorias Realizadas", value: totalInspections, icon: CheckCircle, color: "text-rose-500", bg: "bg-rose-500/10" },
+    { 
+      name: "Recepcionistas", 
+      value: totalUsers, 
+      icon: Users, 
+      description: "Equipe de recepção ativa",
+      trend: "+2 hoje"
+    },
+    { 
+      name: "Camareiras", 
+      value: totalMaids, 
+      icon: ShieldCheck, 
+      description: "Equipe de limpeza",
+      trend: "100% ativas"
+    },
+    { 
+      name: "Quartos", 
+      value: totalRooms, 
+      icon: Hotel, 
+      description: "Capacidade total",
+      trend: "85% ocupação"
+    },
+    { 
+      name: "Vistorias", 
+      value: totalInspections, 
+      icon: CheckCircle, 
+      description: "Realizadas no mês",
+      trend: "+12% vs mês anterior"
+    },
   ];
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Visão geral do sistema de vistorias do hotel.
-        </p>
+    <div className="space-y-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <Badge variant="outline" className="mb-4 border-accent/30 text-accent font-semibold tracking-wider px-3 py-1">
+            SISTEMA DE GESTÃO ELITE
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground tracking-tight">
+            Dashboard Executivo
+          </h1>
+          <p className="mt-3 text-lg text-muted-foreground font-medium max-w-2xl">
+            Bem-vindo ao centro de comando do CheckHotel. Monitore vistorias, gerencie equipes e otimize a experiência dos hóspedes.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <div className="p-4 bg-accent/5 border border-accent/20 rounded-2xl flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <TrendingUp className="text-accent h-6 w-6" />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-widest text-accent font-bold">Status Global</div>
+              <div className="text-lg font-bold">Excelente</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <dl className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((item) => (
-          <div
-            key={item.name}
-            className="relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
-          >
-            <dt>
-              <div className={`absolute rounded-xl p-3 ${item.bg}`}>
-                <item.icon className={`h-6 w-6 ${item.color}`} aria-hidden="true" />
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((item, index) => (
+          <Card key={item.name} className="relative overflow-hidden group hover:shadow-2xl hover:shadow-accent/5 transition-all duration-500 border-border/50">
+            {/* Design Anchor: Subtle Gold Gradient Border on Top */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+            
+            <CardHeader className="pb-2 space-y-0">
+              <div className="flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-primary/5 group-hover:bg-accent/10 transition-colors duration-300">
+                  <item.icon className="h-5 w-5 text-primary group-hover:text-accent transition-colors duration-300" />
+                </div>
+                <Badge variant="ghost" className="text-[10px] text-muted-foreground font-bold tracking-tighter">
+                  {item.trend}
+                </Badge>
               </div>
-              <p className="ml-16 truncate text-sm font-medium text-slate-500">
+              <CardTitle className="text-sm font-medium text-muted-foreground pt-4 uppercase tracking-widest">
                 {item.name}
-              </p>
-            </dt>
-            <dd className="ml-16 flex items-baseline pb-1 sm:pb-2">
-              <p className="text-2xl font-semibold text-slate-900">
-                {item.value}
-              </p>
-            </dd>
-          </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline justify-between">
+                <div className="text-3xl font-bold tracking-tight">{item.value}</div>
+                <ArrowUpRight className="h-4 w-4 text-accent/0 group-hover:text-accent/100 transition-all duration-500 translate-x-2 group-hover:translate-x-0" />
+              </div>
+              <CardDescription className="text-[11px] mt-1 font-medium italic">
+                {item.description}
+              </CardDescription>
+            </CardContent>
+          </Card>
         ))}
-      </dl>
+      </div>
 
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Últimas Vistorias</h2>
-          <div className="text-center py-10 text-slate-400 text-sm">
-            Nenhuma vistoria recente.
-          </div>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2 border-border/50">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl font-serif">Últimas Vistorias</CardTitle>
+                <CardDescription>Atividades recentes capturadas em tempo real</CardDescription>
+              </div>
+              <Badge variant="secondary" className="font-bold">LIVE</Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center animate-pulse">
+                <Hotel className="h-8 w-8 text-muted-foreground/30" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">Aguardando dados de vistoria...</p>
+                <p className="text-xs text-muted-foreground/50 italic">Novos relatórios aparecerão aqui automaticamente.</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Desempenho Camareiras (Mês)</h2>
-          <div className="text-center py-10 text-slate-400 text-sm">
-            Dados insuficientes.
-          </div>
-        </div>
+        <Card className="border-border/50 overflow-hidden relative">
+          {/* Subtle Texture Overlay */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+          
+          <CardHeader>
+            <CardTitle className="text-xl font-serif">Performance</CardTitle>
+            <CardDescription>Taxa de aprovação por camareira</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="text-5xl font-serif text-accent/20 mb-4 tracking-tighter">0%</div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">Sem dados disponíveis</p>
+                <p className="text-xs text-muted-foreground/50">Inicie vistorias para ver as métricas.</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

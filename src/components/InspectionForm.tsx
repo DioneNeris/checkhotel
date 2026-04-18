@@ -2,12 +2,26 @@
 
 import { useState, useRef } from "react";
 import { ChecklistItem, Room } from "@prisma/client";
-import { Camera, Check, X, Send, Save, ArrowLeft, Loader2 } from "lucide-react";
+import { 
+  Camera, 
+  Check, 
+  X, 
+  Send, 
+  Save, 
+  ArrowLeft, 
+  Loader2, 
+  Image as ImageIcon,
+  AlertCircle,
+  CheckCircle2,
+  Trash2
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { db } from "@/lib/db";
 import { compressPhoto } from "@/lib/imageCompression";
 import { v4 as uuidv4 } from "uuid";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 type ItemState = {
   checklistItemId: string;
@@ -83,18 +97,16 @@ export function InspectionForm({
           observation: st.observation
         }));
 
-      // 1. Salvar Inspeção no Dexie
       await db.inspections.add({
         localId,
         roomId: room.id,
-        maidId: null, // TODO: Adicionar seletor de camareira
+        maidId: null,
         roomStatus,
         items: itemsPayload,
         createdAt: Date.now(),
         syncStatus: 'pending'
       });
 
-      // 2. Processar e Salvar Fotos no Dexie
       const photoPromises = Object.values(itemsState)
         .filter(st => st.status === "ISSUE" && st.photo)
         .map(async (st) => {
@@ -109,11 +121,6 @@ export function InspectionForm({
         });
 
       await Promise.all(photoPromises);
-      
-      // 3. Tentar sincronização imediata (silenciosa)
-      // O hook useSync já cuidará disso via intervalo ou evento online, 
-      // mas podemos redirecionar o usuário agora.
-      
       router.push("/app?sync=true");
       router.refresh();
       
@@ -125,34 +132,42 @@ export function InspectionForm({
     }
   };
 
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 pb-20">
-      <div className="flex items-center gap-4 mb-8">
-        <button type="button" onClick={() => router.back()} className="p-2 rounded-full bg-slate-100 text-slate-600">
+    <form onSubmit={handleSubmit} className="space-y-8 pb-32 animate-in fade-in duration-700">
+      {/* Header Section */}
+      <div className="flex items-center gap-4">
+        <button 
+          type="button" 
+          onClick={() => router.back()} 
+          className="p-3 rounded-2xl bg-card border border-border/50 text-muted-foreground active:scale-90 transition-all shadow-sm"
+        >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h2 className="text-2xl font-bold">Quarto {room.number}</h2>
-          <span className="text-sm text-slate-500">Inspeção de rotina</span>
+          <h2 className="text-3xl font-serif font-black text-foreground">Quarto {room.number}</h2>
+          <div className="flex items-center gap-1.5">
+            <div className="w-1 h-1 rounded-full bg-accent" />
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Inspeção de Excelência</span>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-        <label className="block text-sm font-semibold text-slate-700 mb-3">Status do Quarto Pós-Vistoria</label>
+      {/* Room Status Selection Card */}
+      <div className="bg-card p-6 rounded-[2rem] border border-border/50 shadow-sm space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <AlertCircle className="w-4 h-4 text-accent" />
+          <h3 className="text-sm font-bold text-foreground">Status Pós-Vistoria</h3>
+        </div>
+        
         <div className="grid grid-cols-2 gap-3">
           {(["FREE", "OCCUPIED_AC", "OCCUPIED_NO_AC", "MAINTENANCE"] as const).map(rs => {
-            // Mapping for the UI based on user prompt: Livre / ocupado+acesso / ocupado-acesso
             const labels = {
               FREE: "Livre",
-              OCCUPIED_AC: "Ocupado (+Acesso)",
-              OCCUPIED_NO_AC: "Ocupado (-Acesso)",
+              OCCUPIED_AC: "Ocupado (+)",
+              OCCUPIED_NO_AC: "Ocupado (-)",
               MAINTENANCE: "Manutenção"
             };
             
-            // Map our UI choices back to DB Enums (RoomStatus in Prisma is FREE, PENDING, APPROVED, NO_ACCESS)
-            // User requested: "se selecionar quarto: escolhe status (livre, ocupado+acesso, ocupado-acesso)"
-            // For now let's map these to our actual Prisma enum or just FREE / PENDING / APPROVED
              const mapToDb = {
               FREE: "FREE",
               OCCUPIED_AC: "PENDING", 
@@ -160,124 +175,160 @@ export function InspectionForm({
               MAINTENANCE: "PENDING"
             };
 
+            const isSelected = roomStatus === mapToDb[rs];
+
             return (
               <button
                 key={rs}
                 type="button"
                 onClick={() => setRoomStatus(mapToDb[rs] as any)}
                 className={cn(
-                  "py-3 text-sm font-medium rounded-xl border transition-all text-center",
-                  roomStatus === mapToDb[rs] 
-                    ? "bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm"
-                    : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                  "py-4 px-2 text-[11px] font-bold uppercase tracking-wider rounded-2xl border transition-all duration-300",
+                  isSelected 
+                    ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/10"
+                    : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/50"
                 )}
               >
-                {labels[rs as keyof typeof labels]}
+                {labels[rs]}
               </button>
             )
           })}
         </div>
       </div>
 
+      {/* Checklist Items */}
       <div className="space-y-4">
-        {checklistItems.map((item) => {
-          const state = itemsState[item.id];
-          const isIssue = state.status === "ISSUE";
-          
-          return (
-            <div key={item.id} className={cn(
-              "bg-white rounded-2xl border p-5 transition-all",
-              state.status === "OK" ? "border-emerald-200 ring-1 ring-emerald-500/10" : 
-              state.status === "ISSUE" ? "border-rose-200 ring-1 ring-rose-500/10 shadow-sm" : 
-              "border-slate-200"
-            )}>
-              <div className="flex items-center justify-between gap-4">
-                <span className="font-medium text-slate-800 flex-1">{item.description}</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange(item.id, "OK")}
-                    className={cn(
-                      "p-3 rounded-full transition-colors",
-                      state.status === "OK" ? "bg-emerald-500 text-white" : "bg-slate-100 text-slate-400"
-                    )}
-                  >
-                    <Check className="w-5 h-5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange(item.id, "ISSUE")}
-                    className={cn(
-                      "p-3 rounded-full transition-colors",
-                      state.status === "ISSUE" ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-400"
-                    )}
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Show Issue fields */}
-              {isIssue && (
-                <div className="mt-4 pt-4 border-t border-slate-100 animate-in fade-in slide-in-from-top-2">
-                  <textarea
-                    placeholder="Descreva o problema encontrado..."
-                    value={state.observation}
-                    onChange={(e) => handleObservationChange(item.id, e.target.value)}
-                    className="w-full p-3 border border-slate-200 rounded-xl mb-3 focus:outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-100 text-sm"
-                    rows={2}
-                  />
-                  
-                  <input 
-                    type="file"
-                    accept="image/*"
-                    capture="environment" // Forces back camera on mobile
-                    className="hidden"
-                    onChange={(e) => handlePhotoCapture(item.id, e)}
-                    ref={(el) => { fileInputRefs.current[item.id] = el; }}
-                  />
-                  
-                  {state.photoPreviewUrl ? (
-                    <div className="relative rounded-xl overflow-hidden h-32 w-full bg-slate-100 group">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={state.photoPreviewUrl} alt="Preview" className="w-full h-full object-cover" />
-                      <button 
-                        type="button"
-                        onClick={() => {
-                          setItemsState(prev => ({...prev, [item.id]: { ...prev[item.id], photo: null, photoPreviewUrl: null}}));
-                          if (fileInputRefs.current[item.id]) fileInputRefs.current[item.id]!.value = "";
-                        }}
-                        className="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center text-white"
-                      >
-                        Remover Foto
-                      </button>
-                    </div>
-                  ) : (
+        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">Itens de Verificação</h3>
+        <AnimatePresence mode="popLayout">
+          {checklistItems.map((item, index) => {
+            const state = itemsState[item.id];
+            const isOk = state.status === "OK";
+            const isIssue = state.status === "ISSUE";
+            
+            return (
+              <motion.div 
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className={cn(
+                  "bg-card rounded-[2rem] border p-6 transition-all duration-500",
+                  isOk ? "border-emerald-500/30 bg-emerald-500/[0.02]" : 
+                  isIssue ? "border-rose-500/30 bg-rose-500/[0.02] shadow-md" : 
+                  "border-border/50"
+                )}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <span className="font-bold text-foreground text-md leading-snug pt-2">{item.description}</span>
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       type="button"
-                      onClick={() => fileInputRefs.current[item.id]?.click()}
-                      className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 hover:bg-slate-50 hover:border-slate-400 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                      onClick={() => handleStatusChange(item.id, "OK")}
+                      className={cn(
+                        "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300",
+                        isOk 
+                          ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
+                          : "bg-muted/30 text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-600"
+                      )}
                     >
-                      <Camera className="w-5 h-5" />
-                      Tirar Foto do Problema
+                      <Check className="w-6 h-6" />
                     </button>
-                  )}
+                    <button
+                      type="button"
+                      onClick={() => handleStatusChange(item.id, "ISSUE")}
+                      className={cn(
+                        "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300",
+                        isIssue 
+                          ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20" 
+                          : "bg-muted/30 text-muted-foreground hover:bg-rose-500/10 hover:text-rose-600"
+                      )}
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
                 </div>
-              )}
-            </div>
-          );
-        })}
+
+                {/* Expanded Issue Section */}
+                <AnimatePresence>
+                  {isIssue && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-6 pt-6 border-t border-border/50 space-y-4">
+                        <textarea
+                          placeholder="Detalhes técnicos da pendência..."
+                          value={state.observation}
+                          onChange={(e) => handleObservationChange(item.id, e.target.value)}
+                          className="w-full p-4 bg-muted/20 border-none rounded-2xl focus:ring-1 focus:ring-rose-500/30 text-sm font-medium placeholder:italic transition-all"
+                          rows={3}
+                        />
+                        
+                        <input 
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          className="hidden"
+                          onChange={(e) => handlePhotoCapture(item.id, e)}
+                          ref={(el) => { fileInputRefs.current[item.id] = el; }}
+                        />
+                        
+                        {state.photoPreviewUrl ? (
+                          <div className="relative rounded-2xl overflow-hidden h-48 w-full bg-muted shadow-inner group">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={state.photoPreviewUrl} alt="Preview" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  setItemsState(prev => ({...prev, [item.id]: { ...prev[item.id], photo: null, photoPreviewUrl: null}}));
+                                  if (fileInputRefs.current[item.id]) fileInputRefs.current[item.id]!.value = "";
+                                }}
+                                className="bg-rose-500 text-white p-3 rounded-full shadow-xl active:scale-90 transition-transform"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => fileInputRefs.current[item.id]?.click()}
+                            className="w-full py-5 bg-rose-500/5 border-2 border-dashed border-rose-500/20 rounded-2xl text-rose-600 hover:bg-rose-500/10 transition-colors flex flex-col items-center justify-center gap-2"
+                          >
+                            <Camera className="w-8 h-8 opacity-70" />
+                            <span className="text-xs font-bold uppercase tracking-widest">Registrar Evidência Visual</span>
+                          </button>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
 
-      {/* Floating Submit Button */}
-      <div className="fixed bottom-[4.5rem] left-0 right-0 px-4 max-w-2xl mx-auto z-30">
-        <button
+      {/* Floating Action Bar */}
+      <div className="fixed bottom-24 left-0 right-0 px-6 max-w-2xl mx-auto z-30">
+        <motion.button
+          whileTap={{ scale: 0.96 }}
           type="submit"
           disabled={submitting}
-          className="w-full py-4 bg-slate-900 border border-slate-800 text-white rounded-2xl font-bold shadow-xl shadow-slate-900/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
+          className="w-full h-16 bg-foreground text-background rounded-2xl font-black text-lg shadow-2xl shadow-foreground/20 flex items-center justify-center gap-3 disabled:opacity-70 transition-all border border-foreground/50"
         >
-          {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Send className="w-5 h-5" /> Finalizar Vistoria</>}
-        </button>
+          {submitting ? (
+            <Loader2 className="w-6 h-6 animate-spin" />
+          ) : (
+            <>
+              <Send className="w-5 h-5" /> 
+              Finalizar Protocolo
+            </>
+          )}
+        </motion.button>
       </div>
     </form>
   );

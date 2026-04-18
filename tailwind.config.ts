@@ -12,6 +12,11 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        sans: ["var(--font-jakarta)", "ui-sans-serif", "system-ui"],
+        serif: ["var(--font-serif)", "ui-serif", "Georgia"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular"],
+      },
       animation: {
         blob: "blob 7s infinite",
       },

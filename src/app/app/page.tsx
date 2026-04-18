@@ -1,80 +1,98 @@
 import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 import Link from "next/link";
-import { DoorOpen, Clock, CheckCircle, Ban, Search } from "lucide-react";
+import { DoorOpen, Clock, CheckCircle, Ban, Search, Bed, ArrowRight } from "lucide-react";
 import { RoomStatus } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 export default async function AppDashboard() {
   const rooms = await prisma.room.findMany({
     orderBy: { number: 'asc' }
   });
 
-  const getStatusColor = (status: RoomStatus) => {
+  const getStatusStyles = (status: RoomStatus) => {
     switch (status) {
-      case "FREE": return "bg-slate-100 text-slate-600 border-slate-200";
-      case "PENDING": return "bg-amber-100 text-amber-700 border-amber-200";
-      case "APPROVED": return "bg-emerald-100 text-emerald-700 border-emerald-200";
-      case "NO_ACCESS": return "bg-rose-100 text-rose-700 border-rose-200";
-      default: return "bg-slate-100 text-slate-600 border-slate-200";
-    }
-  };
-
-  const getStatusLabel = (status: RoomStatus) => {
-    switch (status) {
-      case "FREE": return "Livre";
-      case "PENDING": return "Pendente";
-      case "APPROVED": return "Aprovado";
-      case "NO_ACCESS": return "Sem Acesso";
-      default: return "Desconhecido";
-    }
-  };
-
-  const getStatusIcon = (status: RoomStatus) => {
-    switch (status) {
-      case "FREE": return <DoorOpen className="w-5 h-5 mb-1 opacity-70" />;
-      case "PENDING": return <Clock className="w-5 h-5 mb-1 opacity-70" />;
-      case "APPROVED": return <CheckCircle className="w-5 h-5 mb-1 opacity-70" />;
-      case "NO_ACCESS": return <Ban className="w-5 h-5 mb-1 opacity-70" />;
-      default: return null;
+      case "FREE": return {
+        card: "bg-emerald-50/50 border-emerald-100/50 hover:bg-emerald-50",
+        icon: "text-emerald-500 bg-emerald-100/50",
+        label: "Livre",
+        badge: "bg-emerald-100 text-emerald-700"
+      };
+      case "PENDING": return {
+        card: "bg-amber-50/50 border-amber-100/50 hover:bg-amber-50",
+        icon: "text-amber-500 bg-amber-100/50",
+        label: "Pendente",
+        badge: "bg-amber-100 text-amber-700"
+      };
+      case "APPROVED": return {
+        card: "bg-indigo-50/50 border-indigo-100/50 hover:bg-indigo-50",
+        icon: "text-indigo-500 bg-indigo-100/50",
+        label: "Aprovado",
+        badge: "bg-indigo-100 text-indigo-700"
+      };
+      case "NO_ACCESS": return {
+        card: "bg-rose-50/50 border-rose-100/50 hover:bg-rose-50",
+        icon: "text-rose-500 bg-rose-100/50",
+        label: "Sem Acesso",
+        badge: "bg-rose-100 text-rose-700"
+      };
+      default: return {
+        card: "bg-slate-50 border-slate-200",
+        icon: "text-slate-400 bg-slate-100",
+        label: "Desconhecido",
+        badge: "bg-slate-100 text-slate-600"
+      };
     }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Quartos</h1>
-        <p className="text-sm text-slate-500">Selecione um quarto para realizar a vistoria.</p>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-4xl font-serif font-black text-foreground tracking-tight">Unidades</h1>
+        <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Selecione para vistoria</p>
       </div>
 
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-slate-400" />
-        </div>
-        <input
-          type="text"
-          placeholder="Buscar quarto..."
-          className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm shadow-sm transition-all"
+      <div className="relative group">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-accent transition-colors" />
+        <Input
+          placeholder="Buscar quarto por número..."
+          className="h-14 pl-11 bg-card/50 border-border/50 rounded-2xl focus-visible:ring-accent shadow-sm"
         />
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {rooms.length === 0 ? (
-           <div className="col-span-full py-12 text-center text-slate-400">
-              <DoorOpen className="w-12 h-12 mx-auto mb-3 opacity-20" />
-              Nenhum quarto cadastrado.
+           <div className="col-span-full py-20 text-center text-muted-foreground bg-muted/20 rounded-[2rem] border border-dashed border-border/50">
+              <Bed className="w-12 h-12 mx-auto mb-4 opacity-20" />
+              <p className="font-medium italic">Nenhuma unidade disponível no momento.</p>
            </div>
         ) : (
-          rooms.map(room => (
-            <Link 
-              href={`/app/vistoria/${room.id}`} 
-              key={room.id}
-              className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all hover:scale-[1.02] active:scale-[0.98] ${getStatusColor(room.status)} shadow-sm`}
-            >
-              <div className="text-2xl font-black mb-1">{room.number}</div>
-              {getStatusIcon(room.status)}
-              <div className="text-[10px] font-bold uppercase tracking-wider mt-1">{getStatusLabel(room.status)}</div>
-            </Link>
-          ))
+          rooms.map(room => {
+            const styles = getStatusStyles(room.status);
+            return (
+              <Link 
+                href={`/app/vistoria/${room.id}`} 
+                key={room.id}
+                className={`group relative flex flex-col p-6 rounded-[2rem] border transition-all active:scale-95 shadow-sm ${styles.card}`}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${styles.icon}`}>
+                    <Bed className="w-5 h-5" />
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </div>
+                
+                <div className="mt-auto">
+                  <h3 className="text-3xl font-serif font-black text-foreground mb-1 leading-none">{room.number}</h3>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <div className={`w-1.5 h-1.5 rounded-full ${room.status === 'FREE' ? 'bg-emerald-500' : room.status === 'NO_ACCESS' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{styles.label}</span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })
         )}
       </div>
     </div>
