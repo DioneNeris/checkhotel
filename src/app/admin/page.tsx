@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 import { Users, ShieldCheck, Hotel, CheckCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const totalUsers = await prisma.user.count({ where: { role: "USER" } });
+  const totalUsers = await prisma.user.count({ where: { role: Role.RECEPTIONIST } });
   const totalMaids = await prisma.maid.count();
   const totalRooms = await prisma.room.count();
   const totalInspections = await prisma.inspection.count();
