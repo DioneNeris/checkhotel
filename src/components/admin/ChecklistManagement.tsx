@@ -93,11 +93,7 @@ export function ChecklistManagement({
                   <span className="font-bold text-slate-900 text-sm">{item.description}</span>
                 </TableCell>
                 <TableCell>
-                  {item.required ? (
-                    <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50 text-[10px] font-bold">OBRIGATÓRIO</Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-slate-400 border-slate-200 text-[10px] font-bold">OPCIONAL</Badge>
-                  )}
+                  <Badge variant="outline" className="text-slate-400 border-slate-200 text-[10px] font-bold">PADRÃO</Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5 text-emerald-600">

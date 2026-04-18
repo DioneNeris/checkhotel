@@ -9,8 +9,8 @@ export default async function CamareirasPage() {
   });
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <MaidManagement initialMaids={maids} />
+    <div className="animate-fade-in">
+      <MaidManagement maids={maids} />
     </div>
   );
 }

@@ -125,7 +125,7 @@ const InspectionDocument = ({ inspection }: { inspection: any }) => (
         </View>
         <View>
           <Text style={{ fontSize: 8, color: "#94a3b8" }}>Protocolo: {inspection.id.slice(0, 12).toUpperCase()}</Text>
-        </div >
+        </View>
       </View>
 
       {/* Meta Information */}

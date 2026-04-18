@@ -9,8 +9,8 @@ export default async function ChecklistPage() {
   });
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <ChecklistManagement initialItems={items} />
+    <div className="animate-fade-in">
+      <ChecklistManagement items={items} />
     </div>
   );
 }

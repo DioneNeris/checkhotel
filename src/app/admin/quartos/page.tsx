@@ -9,8 +9,8 @@ export default async function QuartosPage() {
   });
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <RoomManagement initialRooms={rooms} />
+    <div className="animate-fade-in">
+      <RoomManagement rooms={rooms} />
     </div>
   );
 }
