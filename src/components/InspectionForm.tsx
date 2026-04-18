@@ -5,6 +5,9 @@ import { ChecklistItem, Room } from "@prisma/client";
 import { Camera, Check, X, Send, Save, ArrowLeft, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { db } from "@/lib/db";
+import { compressPhoto } from "@/lib/imageCompression";
+import { v4 as uuidv4 } from "uuid";
 
 type ItemState = {
   checklistItemId: string;
@@ -22,6 +25,7 @@ export function InspectionForm({
   checklistItems: ChecklistItem[];
 }) {
   const router = useRouter();
+
   const [itemsState, setItemsState] = useState<Record<string, ItemState>>(
     checklistItems.reduce((acc, item) => {
       acc[item.id] = {
@@ -68,48 +72,59 @@ export function InspectionForm({
     e.preventDefault();
     setSubmitting(true);
     
-    // Check if online, if offline we should save to IDB and sync later
-    // For MVp, if online, just post
-    
     try {
-      const formData = new FormData();
-      formData.append("roomId", room.id);
-      formData.append("roomStatus", roomStatus);
+      const localId = uuidv4();
       
-      const itemsPayload = Object.values(itemsState).filter(st => st.status).map(st => ({
-        checklistItemId: st.checklistItemId,
-        status: st.status,
-        observation: st.observation
-      }));
-      
-      formData.append("items", JSON.stringify(itemsPayload));
-      
-      // Append photos
-      Object.values(itemsState).forEach(st => {
-        if (st.status === "ISSUE" && st.photo) {
-          formData.append(`photo_${st.checklistItemId}`, st.photo);
-        }
+      const itemsPayload = Object.values(itemsState)
+        .filter(st => st.status)
+        .map(st => ({
+          checklistItemId: st.checklistItemId,
+          status: st.status as "OK" | "ISSUE",
+          observation: st.observation
+        }));
+
+      // 1. Salvar Inspeção no Dexie
+      await db.inspections.add({
+        localId,
+        roomId: room.id,
+        maidId: null, // TODO: Adicionar seletor de camareira
+        roomStatus,
+        items: itemsPayload,
+        createdAt: Date.now(),
+        syncStatus: 'pending'
       });
+
+      // 2. Processar e Salvar Fotos no Dexie
+      const photoPromises = Object.values(itemsState)
+        .filter(st => st.status === "ISSUE" && st.photo)
+        .map(async (st) => {
+          const compressed = await compressPhoto(st.photo!);
+          return db.photos.add({
+            inspectionLocalId: localId,
+            checklistItemId: st.checklistItemId,
+            file: compressed,
+            status: 'pending',
+            attempts: 0
+          });
+        });
+
+      await Promise.all(photoPromises);
       
-      const res = await fetch("/api/inspections", {
-        method: "POST",
-        body: formData
-      });
+      // 3. Tentar sincronização imediata (silenciosa)
+      // O hook useSync já cuidará disso via intervalo ou evento online, 
+      // mas podemos redirecionar o usuário agora.
       
-      if (!res.ok) throw new Error("Falha ao salvar vistoria");
-      
-      // Redirect back on success
-      router.push("/app");
+      router.push("/app?sync=true");
       router.refresh();
       
     } catch (err) {
       console.error(err);
-      alert("Erro ao salvar. Vistoria salva offline (mock).");
-      // TODO: Implement IndexedDB Offline Save Logic
+      alert("Erro ao preparar vistoria offline.");
     } finally {
       setSubmitting(false);
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 pb-20">

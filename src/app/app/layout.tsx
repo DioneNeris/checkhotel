@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, WifiOff, Wifi, User, Home, CheckCircle2 } from "lucide-react";
+import { LogOut, WifiOff, Wifi, User, Home, CheckCircle2, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -12,27 +12,16 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import { SyncIndicator } from "@/components/SyncIndicator";
+
 export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const { data: session } = useSession();
-  const [isOnline, setIsOnline] = useState(true);
+  const pathname = usePathname();
 
-  useEffect(() => {
-    setIsOnline(navigator.onLine);
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pt-16 pb-20">
@@ -46,19 +35,7 @@ export default function AppLayout({
         </div>
         
         <div className="flex items-center gap-3">
-          {/* Online/Offline status badge */}
-          <div className={cn(
-             "flex items-center gap-1.5 px-2.5 py-1 sm:px-3 text-xs font-semibold rounded-full border transition-colors",
-             isOnline 
-               ? "bg-emerald-50 text-emerald-600 border-emerald-200" 
-               : "bg-rose-50 text-rose-600 border-rose-200"
-          )}>
-            {isOnline ? (
-              <><Wifi className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Online</span></>
-            ) : (
-              <><WifiOff className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Offline</span></>
-            )}
-          </div>
+          <SyncIndicator />
           
           <button 
             onClick={() => signOut({ callbackUrl: "/login" })}
@@ -70,6 +47,7 @@ export default function AppLayout({
       </header>
 
       {/* Main Content Area */}
+
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-6">
          {children}
       </main>
@@ -85,7 +63,19 @@ export default function AppLayout({
             <span className="text-[10px] font-semibold">Quartos</span>
           </Link>
           
+          <Link 
+            href="/app/sync"
+            className={cn(
+              "flex-1 flex flex-col items-center justify-center gap-1 transition-colors",
+              pathname === "/app/sync" ? "text-indigo-600" : "text-slate-400"
+            )}
+          >
+            <RefreshCw className="w-6 h-6" />
+            <span className="text-[10px] font-semibold">Sincronia</span>
+          </Link>
+
           {session?.user?.role === "ADMIN" && (
+
             <Link 
               href="/admin"
               className="flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 transition-colors"
