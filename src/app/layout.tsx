@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-serif' });
-const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: "CheckHotel - Premium Inspection System",
-  description: "Advanced PWA for luxury hotel inspection and housekeeping management",
+  title: "CheckHotel - Sistema de Gestão de Vistorias",
+  description: "Plataforma profissional para gestão de governança e vistorias hoteleiras",
 };
 
 export default function RootLayout({
@@ -18,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={cn("font-sans antialiased", playfair.variable, plusJakarta.variable)}>
-      <body className="antialiased bg-background">
+    <html lang="pt-BR" className={cn("antialiased", inter.variable)}>
+      <body className="font-sans antialiased bg-background selection:bg-primary/10 selection:text-primary">
         <Providers>{children}</Providers>
       </body>
     </html>

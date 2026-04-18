@@ -43,48 +43,10 @@ const config: Config = {
   			border: 'var(--border)',
   			input: 'var(--input)',
   			ring: 'var(--ring)',
-  			chart: {
-  				'1': 'var(--chart-1)',
-  				'2': 'var(--chart-2)',
-  				'3': 'var(--chart-3)',
-  				'4': 'var(--chart-4)',
-  				'5': 'var(--chart-5)'
-  			}
   		},
   		fontFamily: {
-  			sans: [
-  				'var(--font-jakarta)',
-  				'ui-sans-serif',
-  				'system-ui'
-  			],
-  			serif: [
-  				'var(--font-serif)',
-  				'ui-serif',
-  				'Georgia'
-  			],
-  			mono: [
-  				'ui-monospace',
-  				'SFMono-Regular'
-  			]
-  		},
-  		animation: {
-  			blob: 'blob 7s infinite'
-  		},
-  		keyframes: {
-  			blob: {
-  				'0%': {
-  					transform: 'translate(0px, 0px) scale(1)'
-  				},
-  				'33%': {
-  					transform: 'translate(30px, -50px) scale(1.1)'
-  				},
-  				'66%': {
-  					transform: 'translate(-20px, 20px) scale(0.9)'
-  				},
-  				'100%': {
-  					transform: 'translate(0px, 0px) scale(1)'
-  				}
-  			}
+  			sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui'],
+  			mono: ['ui-monospace', 'SFMono-Regular']
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

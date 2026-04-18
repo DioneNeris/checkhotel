@@ -4,122 +4,114 @@ import { renderToStream } from "@react-pdf/renderer";
 import React from "react";
 import { Document, Page, Text, View, StyleSheet, Font, Image } from "@react-pdf/renderer";
 
-// Note: Standard PDF fonts are used to avoid complex registration without font files.
-// Times-Bold gives a more "Executive/Hospitality" feel than Helvetica.
-
+// Clean, Professional PDF Theme
 const styles = StyleSheet.create({
   page: { 
     padding: 40, 
-    fontFamily: "Times-Roman",
+    fontFamily: "Helvetica",
     backgroundColor: "#ffffff"
   },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderBottom: "2pt solid #c5a059", // Gold Accent
+    borderBottom: "2pt solid #2563eb", // Professional Blue Accent
     paddingBottom: 15,
     marginBottom: 30,
   },
   brandName: { 
-    fontSize: 24, 
-    fontFamily: "Times-Bold",
-    color: "#1a1a1a", 
-    letterSpacing: 1
+    fontSize: 22, 
+    fontFamily: "Helvetica-Bold",
+    color: "#0f172a", 
+    letterSpacing: -0.5
   },
   reportType: {
-    fontSize: 10,
-    color: "#c5a059",
+    fontSize: 9,
+    color: "#2563eb",
     fontFamily: "Helvetica-Bold",
-    letterSpacing: 2,
+    letterSpacing: 1,
     marginTop: 4,
     textTransform: "uppercase"
   },
   metaContainer: {
-    marginBottom: 40,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
+    marginBottom: 30,
+    padding: 15,
+    backgroundColor: "#f8fafc",
+    borderRadius: 6,
     flexDirection: "row",
     flexWrap: "wrap",
-    border: "1pt solid #eeeeee"
+    border: "0.5pt solid #e2e8f0"
   },
   metaItem: {
     width: "50%",
-    marginBottom: 10
+    marginBottom: 8
   },
   metaLabel: {
-    fontSize: 8,
-    color: "#999999",
+    fontSize: 7,
+    color: "#64748b",
     textTransform: "uppercase",
     marginBottom: 2,
-    fontFamily: "Helvetica"
+    fontFamily: "Helvetica-Bold"
   },
   metaValue: {
-    fontSize: 12,
-    color: "#1a1a1a",
-    fontFamily: "Times-Bold"
+    fontSize: 11,
+    color: "#0f172a",
+    fontFamily: "Helvetica"
   },
   sectionTitle: {
-    fontSize: 14,
-    fontFamily: "Times-Bold",
-    color: "#1a1a1a",
-    marginBottom: 15,
-    paddingBottom: 5,
-    borderBottom: "1pt solid #eeeeee"
+    fontSize: 12,
+    fontFamily: "Helvetica-Bold",
+    color: "#0f172a",
+    marginBottom: 10,
+    paddingBottom: 4,
+    borderBottom: "1pt solid #f1f5f9"
   },
   table: {
     display: "flex",
     width: "auto",
-    marginBottom: 30
+    marginBottom: 20
   },
   tableRow: {
     flexDirection: "row",
-    borderBottomColor: "#eeeeee",
+    borderBottomColor: "#f1f5f9",
     borderBottomWidth: 1,
-    minHeight: 35,
+    minHeight: 30,
     alignItems: "center"
   },
   tableHeader: {
-    backgroundColor: "#1a1a1a",
-    color: "#ffffff",
-    fontFamily: "Helvetica-Bold",
-    fontSize: 9,
-    height: 25
+    backgroundColor: "#f8fafc",
+    borderBottomWidth: 2,
+    borderBottomColor: "#e2e8f0",
+    minHeight: 25
   },
-  colDescription: { width: "60%", paddingLeft: 10 },
-  colStatus: { width: "40%", paddingLeft: 10 },
-  cellText: { fontSize: 10, color: "#333333" },
-  cellStatusOk: { color: "#10b981", fontFamily: "Helvetica-Bold" },
-  cellStatusIssue: { color: "#ef4444", fontFamily: "Helvetica-Bold" },
+  colDescription: { width: "70%", paddingLeft: 8 },
+  colStatus: { width: "30%", paddingLeft: 8 },
+  headerText: { fontSize: 8, color: "#475569", fontFamily: "Helvetica-Bold" },
+  cellText: { fontSize: 9, color: "#1e293b" },
+  cellStatusOk: { color: "#059669", fontFamily: "Helvetica-Bold" },
+  cellStatusIssue: { color: "#dc2626", fontFamily: "Helvetica-Bold" },
   obsContainer: {
-    marginTop: 5,
-    paddingLeft: 10,
-    paddingBottom: 10
+    marginTop: 4,
+    padding: 8,
+    backgroundColor: "#fff1f2",
+    borderRadius: 4,
+    borderLeft: "2pt solid #fb7185",
+    marginLeft: 8,
+    marginBottom: 8
   },
-  obsLabel: { fontSize: 8, color: "#ef4444", marginBottom: 2, fontFamily: "Helvetica-BoldOblique" },
-  obsText: { fontSize: 9, color: "#666666", fontStyle: "italic" },
+  obsLabel: { fontSize: 7, color: "#be123c", marginBottom: 2, fontFamily: "Helvetica-Bold" },
+  obsText: { fontSize: 8, color: "#4c0519" },
   footer: {
     position: "absolute",
-    bottom: 40,
+    bottom: 30,
     left: 40,
     right: 40,
-    borderTop: "1pt solid #eeeeee",
-    paddingTop: 20,
+    borderTop: "0.5pt solid #e2e8f0",
+    paddingTop: 15,
     flexDirection: "row",
     justifyContent: "space-between"
   },
-  footerText: { fontSize: 8, color: "#999999", fontFamily: "Helvetica" },
-  seal: {
-    width: 60,
-    height: 60,
-    border: "2pt solid #c5a059",
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    opacity: 0.3
-  },
-  sealText: { fontSize: 8, color: "#c5a059", fontFamily: "Helvetica-Bold", textAlign: "center" }
+  footerText: { fontSize: 7, color: "#94a3b8", fontFamily: "Helvetica" }
 });
 
 const InspectionDocument = ({ inspection }: { inspection: any }) => (
@@ -129,11 +121,11 @@ const InspectionDocument = ({ inspection }: { inspection: any }) => (
       <View style={styles.headerContainer}>
         <View>
           <Text style={styles.brandName}>CheckHotel</Text>
-          <Text style={styles.reportType}>Vistoria Executiva de Quarto</Text>
+          <Text style={styles.reportType}>Relatório Técnico de Inspeção</Text>
         </View>
-        <View style={styles.seal}>
-          <Text style={styles.sealText}>QUALITY{"\n"}ASSURED</Text>
-        </View>
+        <View>
+          <Text style={{ fontSize: 8, color: "#94a3b8" }}>Protocolo: {inspection.id.slice(0, 12).toUpperCase()}</Text>
+        </div >
       </View>
 
       {/* Meta Information */}
@@ -143,44 +135,44 @@ const InspectionDocument = ({ inspection }: { inspection: any }) => (
           <Text style={styles.metaValue}>{inspection.room.number}</Text>
         </View>
         <View style={styles.metaItem}>
-          <Text style={styles.metaLabel}>Data da Emissão</Text>
+          <Text style={styles.metaLabel}>Data da Vistoria</Text>
           <Text style={styles.metaValue}>{new Date(inspection.date).toLocaleDateString("pt-BR")}</Text>
         </View>
         <View style={styles.metaItem}>
-          <Text style={styles.metaLabel}>Responsável (ID)</Text>
-          <Text style={styles.metaValue}>{inspection.userId.slice(0, 8)}</Text>
+          <Text style={styles.metaLabel}>Status Final</Text>
+          <Text style={[styles.metaValue, { color: inspection.status === "APPROVED" ? "#059669" : "#dc2626", fontWeight: "bold" }]}>
+            {inspection.status === "APPROVED" ? "APROVADO PARA USO" : "MANUTENÇÃO REQUERIDA"}
+          </Text>
         </View>
         <View style={styles.metaItem}>
-          <Text style={styles.metaLabel}>Classificação Final</Text>
-          <Text style={[styles.metaValue, { color: inspection.status === "APPROVED" ? "#10b981" : "#ef4444" }]}>
-            {inspection.status === "APPROVED" ? "APROVADO" : "COM PENDÊNCIAS"}
-          </Text>
+          <Text style={styles.metaLabel}>ID do Auditor</Text>
+          <Text style={styles.metaValue}>{inspection.userId.slice(0, 10).toUpperCase()}</Text>
         </View>
       </View>
 
       {/* Items Table */}
-      <Text style={styles.sectionTitle}>Checklist de Inspeção</Text>
+      <Text style={styles.sectionTitle}>Resultados do Checklist</Text>
       <View style={styles.table}>
         <View style={[styles.tableRow, styles.tableHeader]}>
-          <View style={styles.colDescription}><Text style={{ color: "white" }}>ITEM ANALISADO</Text></View>
-          <View style={styles.colStatus}><Text style={{ color: "white" }}>STATUS</Text></View>
+          <View style={styles.colDescription}><Text style={styles.headerText}>ITEM DE VERIFICAÇÃO</Text></View>
+          <View style={styles.colStatus}><Text style={styles.headerText}>RESULTADO</Text></View>
         </View>
 
         {inspection.items.map((item: any) => (
-          <View key={item.id}>
+          <View key={item.id} wrap={false}>
             <View style={styles.tableRow}>
               <View style={styles.colDescription}>
                 <Text style={styles.cellText}>{item.checklistItem.description}</Text>
               </View>
               <View style={styles.colStatus}>
                 <Text style={[styles.cellText, item.status === "OK" ? styles.cellStatusOk : styles.cellStatusIssue]}>
-                  {item.status === "OK" ? "✓ APROVADO" : "✗ PROBLEMA"}
+                  {item.status === "OK" ? "CONFORME" : "NÃO CONFORME"}
                 </Text>
               </View>
             </View>
             {item.observation && (
               <View style={styles.obsContainer}>
-                <Text style={styles.obsLabel}>OBSERVAÇÃO TÉCNICA:</Text>
+                <Text style={styles.obsLabel}>DETALHES DA NÃO CONFORMIDADE:</Text>
                 <Text style={styles.obsText}>{item.observation}</Text>
               </View>
             )}
@@ -190,8 +182,8 @@ const InspectionDocument = ({ inspection }: { inspection: any }) => (
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Gerado automaticamente pelo Sistema CheckHotel Elite - Documento oficial interno.</Text>
-        <Text style={styles.footerText}>Página 1 de 1</Text>
+        <Text style={styles.footerText}>Sistema CheckHotel - Gestão Inteligente de Hospitalidade</Text>
+        <Text style={styles.footerText}>Relatório gerado digitalmente.</Text>
       </View>
     </Page>
   </Document>
@@ -204,7 +196,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       include: {
         room: true,
         items: {
-          include: { checklistItem: true, photos: true }
+          include: { checklistItem: true }
         }
       }
     });
@@ -218,7 +210,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     return new NextResponse(stream as any, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="vistoria-${inspection.room.number}.pdf"`,
+        "Content-Disposition": `inline; filename="vistoria-${inspection.room.number}.pdf"`,
       },
     });
 

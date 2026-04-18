@@ -3,16 +3,9 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, WifiOff, Wifi, User, Home, CheckCircle2, RefreshCw, Bed } from "lucide-react";
-import { useState, useEffect } from "react";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { motion, AnimatePresence } from "framer-motion";
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
+import { LogOut, User, RefreshCw, Bed, CheckCircle2 } from "lucide-react";
+import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { SyncIndicator } from "@/components/SyncIndicator";
 
 export default function AppLayout({
@@ -31,96 +24,82 @@ export default function AppLayout({
   }, [session, status, pathname, router]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pt-16 pb-24">
-      {/* Top Navbar: Hospitality Elite Style */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-card/80 backdrop-blur-md border-b border-border/50 z-40 px-6 flex items-center justify-between shadow-sm">
+    <div className="min-h-screen bg-slate-50 flex flex-col pt-16 pb-24 font-sans">
+      {/* Top Navbar */}
+      <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 z-40 px-6 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-            <CheckCircle2 className="w-5 h-5 text-primary-foreground" />
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-100">
+            <CheckCircle2 className="w-5 h-5 text-white" />
           </div>
-          <div className="flex flex-col -gap-1">
-            <span className="font-serif font-black text-foreground tracking-tighter leading-none">CheckHotel</span>
-            <span className="text-[8px] font-bold text-accent uppercase tracking-widest leading-none">Elite Service</span>
+          <div className="flex flex-col">
+            <span className="font-black text-slate-800 tracking-tighter leading-none">CheckHotel</span>
+            <span className="text-[7px] font-black text-blue-600 uppercase tracking-widest leading-none mt-0.5">Mobile Access</span>
           </div>
         </div>
         
         <div className="flex items-center gap-4">
           <SyncIndicator />
-          <div className="h-4 w-px bg-border/50" />
+          <div className="h-4 w-px bg-slate-200" />
           <button 
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="p-1 text-muted-foreground hover:text-destructive transition-colors"
+            className="p-1 text-slate-400 hover:text-rose-500 transition-colors"
           >
             <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>
 
-      {/* Main Content Area with Entry Animation */}
-      <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-6">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={pathname}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+      {/* Main Content */}
+      <main className="flex-1 w-full max-w-lg mx-auto px-5 py-6">
+        <div className="animate-fade-in">
+          {children}
+        </div>
       </main>
 
-      {/* Bottom Navigation: Premium Mobile Experience */}
-      <nav className="fixed bottom-0 left-0 right-0 h-20 bg-card/90 backdrop-blur-xl border-t border-border/50 z-40 pb-safe shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-xl border-t border-slate-200 z-40 pb-safe shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]">
         <div className="flex h-full max-w-md mx-auto items-center px-4">
           <Link 
             href="/app"
             className={cn(
-              "flex-1 flex flex-col items-center justify-center gap-1.5 transition-all duration-300",
-              pathname === "/app" || pathname.startsWith("/app/vistoria") ? "text-primary" : "text-muted-foreground"
+              "flex-1 flex flex-col items-center justify-center gap-1 transition-all",
+              pathname === "/app" || pathname.startsWith("/app/vistoria") ? "text-blue-600" : "text-slate-400"
             )}
           >
             <div className={cn(
-              "p-1.5 rounded-xl transition-all duration-300",
-              (pathname === "/app" || pathname.startsWith("/app/vistoria")) ? "bg-primary/10" : ""
+              "p-2 rounded-xl transition-all",
+              (pathname === "/app" || pathname.startsWith("/app/vistoria")) ? "bg-blue-50" : ""
             )}>
               <Bed className="w-6 h-6" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest">Unidades</span>
-            {(pathname === "/app" || pathname.startsWith("/app/vistoria")) && (
-              <motion.div layoutId="nav-pill" className="absolute bottom-1 w-1 h-1 rounded-full bg-primary" />
-            )}
+            <span className="text-[9px] font-black uppercase tracking-widest">Unidades</span>
           </Link>
           
           <Link 
             href="/app/sync"
             className={cn(
-              "flex-1 flex flex-col items-center justify-center gap-1.5 transition-all duration-300",
-              pathname === "/app/sync" ? "text-primary" : "text-muted-foreground"
+              "flex-1 flex flex-col items-center justify-center gap-1 transition-all",
+              pathname === "/app/sync" ? "text-blue-600" : "text-slate-400"
             )}
           >
             <div className={cn(
-              "p-1.5 rounded-xl transition-all duration-300",
-              pathname === "/app/sync" ? "bg-primary/10" : ""
+              "p-2 rounded-xl transition-all",
+              pathname === "/app/sync" ? "bg-blue-50" : ""
             )}>
               <RefreshCw className="w-6 h-6" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest">Sincronia</span>
-            {pathname === "/app/sync" && (
-              <motion.div layoutId="nav-pill" className="absolute bottom-1 w-1 h-1 rounded-full bg-primary" />
-            )}
+            <span className="text-[9px] font-black uppercase tracking-widest">Sincronia</span>
           </Link>
 
           {session?.user?.role === "ADMIN" && (
             <Link 
               href="/admin"
-              className="flex-1 flex flex-col items-center justify-center gap-1.5 text-muted-foreground hover:text-primary transition-all duration-300"
+              className="flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-blue-600 transition-all"
             >
-              <div className="p-1.5 rounded-xl">
+              <div className="p-2 rounded-xl">
                 <User className="w-6 h-6" />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest">Admin</span>
+              <span className="text-[9px] font-black uppercase tracking-widest">Painel</span>
             </Link>
           )}
         </div>
